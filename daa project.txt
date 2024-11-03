@@ -1,0 +1,47 @@
+class Graph:
+    def __init__(self):
+        self.graph = {}
+
+    def add_edge(self, src, dest, distance):
+        if src not in self.graph:
+            self.graph[src] = []
+        self.graph[src].append((dest, distance))
+        if dest not in self.graph:
+            self.graph[dest] = []
+        self.graph[dest].append((src, distance))
+
+    def dijkstra(self, start):
+        import heapq
+        queue = [(0, start)]
+        distances = {node: float('infinity') for node in self.graph}
+        distances[start] = 0
+        while queue:
+            current_distance, current_node = heapq.heappop(queue)
+            for neighbor, weight in self.graph[current_node]:
+                distance = current_distance + weight
+                if distance < distances[neighbor]:
+                    distances[neighbor] = distance
+                    heapq.heappush(queue, (distance, neighbor))
+        return distances
+
+class TravelPlanner:
+    def __init__(self):
+        self.graph = Graph()
+
+    def add_destination(self, src, dest, distance):
+        self.graph.add_edge(src, dest, distance)
+
+    def shortest_path(self, start):
+        return self.graph.dijkstra(start)
+
+if __name__ == "__main__":
+    planner = TravelPlanner()
+    planner.add_destination('A', 'B', 5)
+    planner.add_destination('A', 'C', 10)
+    planner.add_destination('B', 'C', 3)
+    planner.add_destination('B', 'D', 2)
+    planner.add_destination('C', 'D', 1)
+
+    start_point = 'A'
+    shortest_paths = planner.shortest_path(start_point)
+    print(f"Shortest paths from {start_point}: {shortest_paths}")
